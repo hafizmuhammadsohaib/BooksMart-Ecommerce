@@ -1,3 +1,6 @@
 <Solution>
+  <Project Path="BooksMart.Data/BooksMart.Data.csproj" Id="3a4b90ac-1b16-4cef-ae0d-145a82bf0884" />
+  <Project Path="BooksMart.Models/BooksMart.Models.csproj" Id="85d732e2-8b56-4f68-bc30-bc7497aecc19" />
+  <Project Path="BooksMart.Utilities/BooksMart.Utilities.csproj" Id="e05b7d84-86aa-49ac-ad6b-cf4653c6152a" />
   <Project Path="BooksMart.Web/BooksMart.Web.csproj" />
 </Solution>

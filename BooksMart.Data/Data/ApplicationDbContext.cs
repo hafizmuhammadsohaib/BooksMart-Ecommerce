@@ -1,7 +1,7 @@
-﻿using BooksMart.Web.Models;
+﻿using BooksMart.Models.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BooksMart.Web.Data
+namespace BooksMart.Data.Data
 {
     public class ApplicationDbContext : DbContext
     {

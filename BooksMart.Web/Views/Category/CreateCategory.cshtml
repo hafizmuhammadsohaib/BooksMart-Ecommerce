@@ -1,0 +1,48 @@
+﻿@model Category
+
+
+<div class="container mt-4">
+
+    <h2 class="mb-4 text-center">Create Category</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form asp-action="CreateCategory" method="post">
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" placeholder="Enter category name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="DisplayOrder" class="form-label"></label>
+                    <input asp-for="DisplayOrder" class="form-control" placeholder="Enter display order" />
+                    <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+                </div>
+                <div class="row"> 
+                    <div class="col-6">
+                        <button type="submit" class="btn btn-primary form-control">
+                            Create
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <a asp-action="Index" class="btn btn-outline-secondary border ms-2 form-control">
+                            Back to List
+                        </a>
+                    </div>
+                </div>
+               
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+@* client-side validation *@
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

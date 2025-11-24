@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using BooksMart.Web.Models;
+using BooksMart.Models.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BooksMart.Web.Controllers
