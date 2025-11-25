@@ -11,6 +11,12 @@ a {
   color: #0077cc;
 }
 
+.navbar .nav-link,
+.navbar .dropdown-toggle {
+    color: #fff !important;
+}
+
+
 .btn-primary {
   color: #fff;
   background-color: #1b6ec2;
