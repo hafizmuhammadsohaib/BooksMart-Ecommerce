@@ -1,21 +1,20 @@
-﻿using BooksMart.Data.Data;
+﻿using BooksMart.Data.Interfaces.Repository.IRepository;
 using BooksMart.Models.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BooksMart.Web.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly ApplicationDbContext dbContext;
+        private readonly IUnitOfWork unitOfWork;
 
-        public CategoryController(ApplicationDbContext dbContext)
+        public CategoryController(IUnitOfWork unitOfWork)
         {
-            this.dbContext = dbContext;
+            this.unitOfWork = unitOfWork;
         }
         public async Task<IActionResult> Index()
         {
-            var categories = await dbContext.Categories.ToListAsync();
+            var categories = await unitOfWork.Category.GetAllAsync();
             return View(categories);
         }
         public IActionResult CreateCategory()
@@ -36,8 +35,8 @@ namespace BooksMart.Web.Controllers
             }
             else
             {
-                await dbContext.Categories.AddAsync(category);
-                await dbContext.SaveChangesAsync();
+                await unitOfWork.Category.AddAsync(category);
+                await unitOfWork.SaveAsync();
                 TempData["success"] = "Category created successfully";
                 return RedirectToAction("Index");
             }
@@ -48,7 +47,7 @@ namespace BooksMart.Web.Controllers
             {
                 return NotFound();
             }
-            var categoryFromDb = await dbContext.Categories.FindAsync(id);
+            var categoryFromDb = await unitOfWork.Category.GetByIdAsync(u => u.Id == id);
             //var categoryFromDb1 = await dbContext.Categories.FirstOrDefaultAsync(x=>x.Id==id);
             if (categoryFromDb == null)
             {
@@ -61,8 +60,8 @@ namespace BooksMart.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                dbContext.Categories.Update(category);
-                await dbContext.SaveChangesAsync();
+                unitOfWork.Category.Update(category);
+                await unitOfWork.SaveAsync();
                 TempData["success"] = "Category updated successfully";
                 return RedirectToAction("Index");
             }
@@ -74,7 +73,7 @@ namespace BooksMart.Web.Controllers
             {
                 return NotFound();
             }
-            var categoryFromDb = await dbContext.Categories.FindAsync(id);
+            Category? categoryFromDb = await unitOfWork.Category.GetByIdAsync(u => u.Id == id);
             if (categoryFromDb == null)
             {
                 return NotFound();
@@ -84,13 +83,13 @@ namespace BooksMart.Web.Controllers
         [HttpPost, ActionName("DeleteCategory")]
         public async Task<IActionResult> DeleteCategoryById(int? id)
         {
-            Category? category = await dbContext.Categories.FindAsync(id);
+            Category? category = await unitOfWork.Category.GetByIdAsync(u => u.Id == id);
             if (category == null)
             {
                 return NotFound();
             }
-            dbContext.Categories.Remove(category);
-            await dbContext.SaveChangesAsync();
+            unitOfWork.Category.Delete(category);
+            await unitOfWork.SaveAsync();
             TempData["success"] = "Category deleted successfully";
             return RedirectToAction("Index");
         }
