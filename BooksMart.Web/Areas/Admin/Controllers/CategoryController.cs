@@ -2,8 +2,9 @@
 using BooksMart.Models.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BooksMart.Web.Controllers
+namespace BooksMart.Web.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork unitOfWork;
