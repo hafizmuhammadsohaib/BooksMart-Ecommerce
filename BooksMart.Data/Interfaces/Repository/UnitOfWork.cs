@@ -8,10 +8,13 @@ namespace BooksMart.Data.Interfaces.Repository
         private readonly ApplicationDbContext dbContext;
         public ICategoryRepository Category { get; private set; }
 
+        public IBookRepository Book { get; private set; }
+
         public UnitOfWork(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
             Category = new CategoryRepository(dbContext);
+            Book = new BookRepository(dbContext);
         }
 
         public async Task SaveAsync()

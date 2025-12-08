@@ -1,6 +1,7 @@
 ﻿using BooksMart.Data.Interfaces.Repository.IRepository;
 using BooksMart.Models.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BooksMart.Web.Areas.Admin.Controllers
 {
@@ -15,7 +16,7 @@ namespace BooksMart.Web.Areas.Admin.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var categories = await unitOfWork.Category.GetAllAsync();
+            var categories = await unitOfWork.Category.GetAll();
             return View(categories);
         }
         public IActionResult CreateCategory()

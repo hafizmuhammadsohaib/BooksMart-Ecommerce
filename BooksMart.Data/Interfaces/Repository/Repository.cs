@@ -13,11 +13,39 @@ namespace BooksMart.Data.Interfaces.Repository
         {
             this.dbContext = dbContext;
             dbSet= dbContext.Set<T>();
+            dbContext.Books.Include(u => u.Category).Include(u => u.CategoryId);
         }
 
+        public async Task<IEnumerable<T>> GetAll(string? includeProperties = null)
+        {
+            IQueryable<T> query = dbSet;
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties
+                    .Split(new char[] {','},StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
+            return await query.ToListAsync(); 
+        }
+        public async Task<T?> GetByIdAsync(Expression<Func<T, bool>> expression, string? includeProperties = null)
+        {
+            IQueryable<T> query = dbSet;
+            query = query.Where(expression);
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties
+                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
+            return await query.FirstOrDefaultAsync();
+        }
         public async Task AddAsync(T entity)
         {
-           dbSet.Add(entity);
+            await dbSet.AddAsync(entity);
         }
 
         public void Delete(T entity)
@@ -29,19 +57,5 @@ namespace BooksMart.Data.Interfaces.Repository
         {
             dbSet.RemoveRange(entities);
         }
-
-        public async Task<IEnumerable<T>> GetAllAsync()
-        {
-            IQueryable<T> query = dbSet;
-            return await query.ToListAsync();
-        }
-
-        public async Task<T?> GetByIdAsync(Expression<Func<T, bool>> expression)
-        {
-            IQueryable<T> query = dbSet;
-            query = query.Where(expression);
-            return await query.FirstOrDefaultAsync();
-        }
-
     }
 }

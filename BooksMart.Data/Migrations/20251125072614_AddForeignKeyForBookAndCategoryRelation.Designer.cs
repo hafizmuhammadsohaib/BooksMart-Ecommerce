@@ -3,6 +3,7 @@ using BooksMart.Data.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BooksMart.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251125072614_AddForeignKeyForBookAndCategoryRelation")]
+    partial class AddForeignKeyForBookAndCategoryRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,10 +45,6 @@ namespace BooksMart.Data.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("ISBN")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -80,7 +79,6 @@ namespace BooksMart.Data.Migrations
                             CategoryId = 1,
                             Description = "A gripping tale of mystery and redemption set in a forgotten town where secrets slowly unravel. Follow the journey of a man trying to reclaim his past while confronting the shadows that haunt him.",
                             ISBN = "BK10001001",
-                            ImageUrl = "",
                             ListPrice = 110.0,
                             Price = 95.0,
                             Price100 = 85.0,
@@ -94,7 +92,6 @@ namespace BooksMart.Data.Migrations
                             CategoryId = 2,
                             Description = "A heartwarming story about a young woman's return to her childhood valley, discovering love, loss, and the beauty hidden in everyday life. A gentle reminder that home is more than a place.",
                             ISBN = "BK20002001",
-                            ImageUrl = "",
                             ListPrice = 45.0,
                             Price = 38.0,
                             Price100 = 28.0,
@@ -108,7 +105,6 @@ namespace BooksMart.Data.Migrations
                             CategoryId = 3,
                             Description = "A suspense novel that follows an investigator racing against time to uncover a conspiracy threatening the peace of a bustling city. Every clue unravels a deeper layer of danger.",
                             ISBN = "BK30003001",
-                            ImageUrl = "",
                             ListPrice = 60.0,
                             Price = 52.0,
                             Price100 = 40.0,
@@ -122,7 +118,6 @@ namespace BooksMart.Data.Migrations
                             CategoryId = 3,
                             Description = "An enchanting romantic drama set under the glow of moonlit nights, where two unlikely people cross paths and discover the bittersweet nature of love and destiny.",
                             ISBN = "BK40004001",
-                            ImageUrl = "",
                             ListPrice = 75.0,
                             Price = 70.0,
                             Price100 = 60.0,
@@ -136,7 +131,6 @@ namespace BooksMart.Data.Migrations
                             CategoryId = 1,
                             Description = "A thrilling ocean adventure following a marine explorer who uncovers a hidden world beneath the waves. Courage, mystery, and danger collide deep in the unknown.",
                             ISBN = "BK50005001",
-                            ImageUrl = "",
                             ListPrice = 35.0,
                             Price = 30.0,
                             Price100 = 22.0,
@@ -150,7 +144,6 @@ namespace BooksMart.Data.Migrations
                             CategoryId = 3,
                             Description = "A beautifully written fantasy novel about a young girl's discovery of a magical realm blooming beneath an ancient garden. Wonder, imagination, and bravery shape her unforgettable journey.",
                             ISBN = "BK60006001",
-                            ImageUrl = "",
                             ListPrice = 28.0,
                             Price = 25.0,
                             Price100 = 21.0,
