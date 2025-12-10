@@ -1,11 +1,14 @@
 ﻿using BooksMart.Data.Interfaces.Repository.IRepository;
 using BooksMart.Models.Models;
+using BooksMart.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BooksMart.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = CD.Role_Admin)]
     public class CategoryController : Controller
     {
         private readonly IUnitOfWork unitOfWork;

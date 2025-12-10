@@ -1,0 +1,133 @@
+﻿@page
+@model LoginModel
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-10">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <h1 class="display-5 fw-bold text-primary mb-2">@ViewData["Title"]</h1>
+                        <p class="text-muted">Welcome back to BooksMart</p>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="h-100 d-flex flex-column">
+                                <section>
+                                    <form id="account" method="post">
+                                        <div class="mb-4">
+                                            <h2 class="h4 fw-semibold text-dark mb-1">Use a local account to log in</h2>
+                                            <p class="text-muted small">Enter your credentials below</p>
+                                        </div>
+
+                                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 mb-3" role="alert"></div>
+
+                                        <div class="mb-3">
+                                            <div class="form-floating">
+                                                <input asp-for="Input.Email" class="form-control rounded-3" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                                                <label asp-for="Input.Email" class="form-label text-muted"><i class="bi bi-envelope me-2"></i>Email</label>
+                                            </div>
+                                            <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <div class="form-floating">
+                                                <input asp-for="Input.Password" class="form-control rounded-3" autocomplete="current-password" aria-required="true" placeholder="password" />
+                                                <label asp-for="Input.Password" class="form-label text-muted"><i class="bi bi-lock me-2"></i>Password</label>
+                                            </div>
+                                            <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                                        </div>
+
+                                        <div class="form-check mb-4">
+                                            <input class="form-check-input" asp-for="Input.RememberMe" />
+                                            <label asp-for="Input.RememberMe" class="form-check-label text-muted">
+                                                @Html.DisplayNameFor(m => m.Input.RememberMe)
+                                            </label>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary rounded-3 shadow-sm">
+                                                <i class="bi bi-box-arrow-in-right me-2"></i>Log in
+                                            </button>
+                                        </div>
+
+                                        <div class="d-grid gap-2">
+                                            <a id="forgot-password" asp-page="./ForgotPassword" class="text-center text-decoration-none text-primary small">
+                                                <i class="bi bi-key me-1"></i>Forgot your password?
+                                            </a>
+                                            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="text-center text-decoration-none text-primary small">
+                                                <i class="bi bi-person-plus me-1"></i>Register as a new user
+                                            </a>
+                                            <a id="resend-confirmation" asp-page="./ResendEmailConfirmation" class="text-center text-decoration-none text-primary small">
+                                                <i class="bi bi-envelope-check me-1"></i>Resend email confirmation
+                                            </a>
+                                        </div>
+                                    </form>
+                                </section>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="h-100 d-flex flex-column">
+                                <section class="flex-grow-1">
+                                    <div class="mb-4">
+                                        <h3 class="h4 fw-semibold text-dark mb-1">Use another service to log in</h3>
+                                        <p class="text-muted small">Quick login with social accounts</p>
+                                    </div>
+
+                                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                                        <div class="d-grid gap-3">
+                                            <button type="submit" class="btn btn-outline-danger btn-lg rounded-3 d-flex align-items-center justify-content-center shadow-sm" name="provider" value="Google" title="Log in using your Google account">
+                                                <i class="bi bi-google me-2"></i>
+                                                Continue with Google
+                                            </button>
+
+                                            <button type="submit" class="btn btn-outline-primary btn-lg rounded-3 d-flex align-items-center justify-content-center shadow-sm" name="provider" value="Facebook" title="Log in using your Facebook account">
+                                                <i class="bi bi-facebook me-2"></i>
+                                                Continue with Facebook
+                                            </button>
+                                        </div>
+                                    </form>
+
+                                    @{
+                                        if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                                        {
+                                            <div class="alert alert-warning rounded-3 border-0 mt-3" role="alert">
+                                                <div class="d-flex align-items-start">
+                                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                                    <small>External logins not configured. <a href="https://go.microsoft.com/fwlink/?LinkID=532715" class="alert-link">Learn more</a></small>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </section>
+
+                                <div class="mt-4 pt-4 border-top">
+                                    <p class="text-center text-muted small mb-0">
+                                        Don't have an account?
+                                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="text-primary fw-semibold text-decoration-none">Sign up here</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4 mb-5">
+                <p class="text-muted small">
+                    <i class="bi bi-shield-lock me-1"></i>
+                    Your credentials are encrypted and secure
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

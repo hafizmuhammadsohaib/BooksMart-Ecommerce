@@ -1,0 +1,208 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-11 col-xl-10">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <h1 class="display-5 fw-bold text-primary mb-2">@ViewData["Title"]</h1>
+                        <p class="text-muted">Join our community today</p>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-lg-7">
+                            <div class="h-100 d-flex flex-column">
+                                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                                    <div class="mb-4">
+                                        <h2 class="h4 fw-semibold text-dark mb-1">Create a new account</h2>
+                                        <p class="text-muted small">Fill in the details below to get started</p>
+                                    </div>
+
+                                    <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 mb-3" role="alert"></div>
+
+                                    <!-- Personal Information Section -->
+                                    <div class="mb-4">
+                                        <h6 class="text-primary fw-semibold mb-3">
+                                            <i class="bi bi-person-circle me-2"></i>Personal Information
+                                        </h6>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <div class="form-floating">
+                                                    <input asp-for="Input.FullName" class="form-control rounded-3" aria-required="true" />
+                                                    <label asp-for="Input.FullName" class="text-muted"><i class="bi bi-person me-2"></i>Full Name</label>
+                                                </div>
+                                                <span asp-validation-for="Input.FullName" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating">
+                                                    <input asp-for="Input.Email" class="form-control rounded-3" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                                                    <label asp-for="Input.Email" class="text-muted"><i class="bi bi-envelope me-2"></i>Email</label>
+                                                </div>
+                                                <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="form-floating">
+                                                    <input asp-for="Input.PhoneNumber" class="form-control rounded-3" aria-required="true" />
+                                                    <label asp-for="Input.PhoneNumber" class="text-muted"><i class="bi bi-telephone me-2"></i>Phone Number</label>
+                                                </div>
+                                                <span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Address Information Section -->
+                                    <div class="mb-4">
+                                        <h6 class="text-primary fw-semibold mb-3">
+                                            <i class="bi bi-geo-alt-fill me-2"></i>Address Information
+                                        </h6>
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <div class="form-floating">
+                                                    <input asp-for="Input.Address" class="form-control rounded-3" aria-required="true" />
+                                                    <label asp-for="Input.Address" class="text-muted"><i class="bi bi-house me-2"></i>Street Address</label>
+                                                </div>
+                                                <span asp-validation-for="Input.Address" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating">
+                                                    <input asp-for="Input.City" class="form-control rounded-3" aria-required="true" />
+                                                    <label asp-for="Input.City" class="text-muted"><i class="bi bi-building me-2"></i>City</label>
+                                                </div>
+                                                <span asp-validation-for="Input.City" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating">
+                                                    <input asp-for="Input.Province" class="form-control rounded-3" aria-required="true" />
+                                                    <label asp-for="Input.Province" class="text-muted"><i class="bi bi-map me-2"></i>Province</label>
+                                                </div>
+                                                <span asp-validation-for="Input.Province" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating">
+                                                    <input asp-for="Input.PostalCode" class="form-control rounded-3" aria-required="true" />
+                                                    <label asp-for="Input.PostalCode" class="text-muted"><i class="bi bi-mailbox me-2"></i>Postal Code</label>
+                                                </div>
+                                                <span asp-validation-for="Input.PostalCode" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating">
+                                                    <select asp-for="Input.Role" asp-items="@Model.Input.RolesList" class="form-select rounded-3">
+                                                        <option disabled selected>-Select Role-</option>
+                                                    </select>
+                                                    <label class="text-muted"><i class="bi bi-person-badge me-2"></i>Role</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Security Section -->
+                                    <div class="mb-4">
+                                        <h6 class="text-primary fw-semibold mb-3">
+                                            <i class="bi bi-shield-lock me-2"></i>Security
+                                        </h6>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <div class="form-floating position-relative">
+                                                    <input asp-for="Input.Password" class="form-control rounded-3 pe-5" autocomplete="new-password" aria-required="true" placeholder="password" />
+                                                    <label asp-for="Input.Password" class="text-muted"><i class="bi bi-lock me-2"></i>Password</label>
+                                                    <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted" style="z-index: 10; padding: 0.5rem 1rem;" onmousedown="document.getElementById('Input_Password').type='text'" onmouseup="document.getElementById('Input_Password').type='password'" onmouseleave="document.getElementById('Input_Password').type='password'" ontouchstart="document.getElementById('Input_Password').type='text'" ontouchend="document.getElementById('Input_Password').type='password'">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                </div>
+                                                <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating position-relative">
+                                                    <input asp-for="Input.ConfirmPassword" class="form-control rounded-3 pe-5" autocomplete="new-password" aria-required="true" placeholder="password" />
+                                                    <label asp-for="Input.ConfirmPassword" class="text-muted"><i class="bi bi-shield-check me-2"></i>Confirm Password</label>
+                                                    <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted" style="z-index: 10; padding: 0.5rem 1rem;" onmousedown="document.getElementById('Input_ConfirmPassword').type='text'" onmouseup="document.getElementById('Input_ConfirmPassword').type='password'" onmouseleave="document.getElementById('Input_ConfirmPassword').type='password'" ontouchstart="document.getElementById('Input_ConfirmPassword').type='text'" ontouchend="document.getElementById('Input_ConfirmPassword').type='password'">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                </div>
+                                                <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary rounded-3 shadow-sm">
+                                        <i class="bi bi-person-plus me-2"></i>Create Account
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-5">
+                            <div class="h-100 d-flex flex-column bg-light rounded-4 p-4">
+                                <section class="flex-grow-1">
+                                    <div class="mb-4">
+                                        <h3 class="h4 fw-semibold text-dark mb-1">Quick Registration</h3>
+                                        <p class="text-muted small">Use your social account for faster signup</p>
+                                    </div>
+
+                                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                                        <div class="d-grid gap-3">
+                                            <button type="submit" class="btn btn-outline-danger btn-lg rounded-3 d-flex align-items-center justify-content-center shadow-sm" name="provider" value="Google" title="Log in using your Google account">
+                                                <i class="bi bi-google me-2"></i>
+                                                Continue with Google
+                                            </button>
+
+                                            <button type="submit" class="btn btn-outline-primary btn-lg rounded-3 d-flex align-items-center justify-content-center shadow-sm" name="provider" value="Facebook" title="Log in using your Facebook account">
+                                                <i class="bi bi-facebook me-2"></i>
+                                                Continue with Facebook
+                                            </button>
+                                        </div>
+                                    </form>
+
+                                    @if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                                    {
+                                        <div class="alert alert-warning rounded-3 border-0 mt-3" role="alert">
+                                            <div class="d-flex align-items-start">
+                                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                                <small>External logins not configured. <a href="https://go.microsoft.com/fwlink/?LinkID=532715" class="alert-link">Learn more</a></small>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <div class="mt-4 p-3 bg-white rounded-3 border">
+                                        <h6 class="fw-semibold mb-2 text-dark">
+                                            <i class="bi bi-info-circle text-primary me-2"></i>Why Register?
+                                        </h6>
+                                        <ul class="small text-muted mb-0 ps-3">
+                                            <li class="mb-1">Track your orders easily</li>
+                                            <li class="mb-1">Save your favorite books</li>
+                                            <li class="mb-1">Get exclusive deals</li>
+                                            <li>Fast checkout process</li>
+                                        </ul>
+                                    </div>
+                                </section>
+
+                                <div class="mt-4 pt-4 border-top">
+                                    <p class="text-center text-muted small mb-0">
+                                        Already have an account?
+                                        <a asp-page="./Login" class="text-primary fw-semibold text-decoration-none">Sign in here</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4 mb-5">
+                <p class="text-muted small">
+                    <i class="bi bi-shield-check me-1"></i>
+                    Your information is secure and will never be shared
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
