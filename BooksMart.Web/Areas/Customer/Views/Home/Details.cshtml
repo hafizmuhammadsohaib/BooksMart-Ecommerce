@@ -1,5 +1,6 @@
-﻿@model Book
+﻿@model ShoppingCart
 <form method="post">
+    <input hidden asp-for="BookId" />
     <!-- Back Button -->
     <div class="container mt-3">
         <a asp-action="Index" class="btn btn-outline-primary bg-gradient fw-semibold">
@@ -13,9 +14,9 @@
             <!-- Header with Gradient -->
             <div class="card-header text-white py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                 <div class="text-center">
-                    <h2 class="fw-bold mb-2">@Model.Title</h2>
+                    <h2 class="fw-bold mb-2">@Model.Book.Title</h2>
                     <p class="mb-0 fs-5">
-                        <i class="bi bi-pen"></i> by <span class="fw-semibold">@Model.AuthorName</span>
+                        <i class="bi bi-pen"></i> by <span class="fw-semibold">@Model.Book.AuthorName</span>
                     </p>
                 </div>
             </div>
@@ -25,10 +26,10 @@
                     <!-- Left Column - Book Image -->
                     <div class="col-lg-4">
                         <div class="position-relative">
-                            <img src="@Model.ImageUrl" class="img-fluid rounded-3 shadow-sm w-100" alt="@Model.Title" style="object-fit: contain; background-color: #f8f9fa; max-height: 500px;" />
+                            <img src="@Model.Book.ImageUrl" class="img-fluid rounded-3 shadow-sm w-100" alt="@Model.Book.Title" style="object-fit: contain; background-color: #f8f9fa; max-height: 500px;" />
                             <div class="position-absolute top-0 start-0 m-3">
                                 <span class="badge bg-primary bg-gradient px-3 py-2 fs-6">
-                                    @Model.Category.Name
+                                    @Model.Book.Category.Name
                                 </span>
                             </div>
                         </div>
@@ -36,7 +37,7 @@
                         <!-- ISBN Badge -->
                         <div class="mt-3 p-3 bg-light rounded-3 text-center">
                             <small class="text-muted d-block mb-1">ISBN</small>
-                            <span class="fw-bold text-dark">@Model.ISBN</span>
+                            <span class="fw-bold text-dark">@Model.Book.ISBN</span>
                         </div>
                     </div>
 
@@ -47,7 +48,7 @@
                             <div class="d-flex align-items-center mb-3">
                                 <h5 class="text-muted mb-0 me-3">List Price:</h5>
                                 <h4 class="text-decoration-line-through text-muted mb-0">
-                                    @Model.ListPrice.ToString("c")
+                                    @Model.Book.ListPrice.ToString("c")
                                 </h4>
                             </div>
 
@@ -72,13 +73,13 @@
                                                         <i class="bi bi-tag-fill"></i> Price
                                                     </td>
                                                     <td class="py-3 text-center fw-bold text-success fs-5">
-                                                        @Model.Price.ToString("c")
+                                                        @Model.Book.Price.ToString("c")
                                                     </td>
                                                     <td class="py-3 text-center fw-bold text-success fs-5">
-                                                        @Model.Price50.ToString("c")
+                                                        @Model.Book.Price50.ToString("c")
                                                     </td>
                                                     <td class="py-3 text-center fw-bold text-success fs-5">
-                                                        @Model.Price100.ToString("c")
+                                                        @Model.Book.Price100.ToString("c")
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -92,9 +93,9 @@
                                 <i class="bi bi-lightning-charge-fill"></i>
                                 <strong>
                                     Save up to @{
-                                    var savings = ((Model.ListPrice - Model.Price100) / Model.ListPrice * 100);
+                                    var savings = ((Model.Book.ListPrice - Model.Book.Price100) / Model.Book.ListPrice * 100);
                                                                         }
-@savings.ToString("0")%
+                                @savings.ToString("0")%
                                 </strong> when you buy in bulk!
                             </div>
                         </div>
@@ -105,7 +106,7 @@
                                 <i class="bi bi-book"></i> Description
                             </h5>
                             <div class="p-3 bg-light rounded-3">
-                                <p class="text-secondary mb-0 lh-base">@Model.Description</p>
+                                <p class="text-secondary mb-0 lh-base">@Model.Book.Description</p>
                             </div>
                         </div>
 
@@ -122,16 +123,15 @@
                                             <span class="input-group-text bg-primary text-white border-0">
                                                 <i class="bi bi-hash"></i>
                                             </span>
-                                            <input type="number" value="1" min="1" class="form-control form-control-lg text-center fw-bold"
+                                            <input asp-for="Count" type="number" value="1" min="1" class="form-control form-control-lg text-center fw-bold"
                                                    aria-label="Quantity" />
                                         </div>
                                     </div>
                                     <div class="col-md-8">
-                                        <button type="button" disabled
-                                                class="btn btn-secondary btn-lg w-100 py-3 fw-semibold"
-                                                style="cursor: not-allowed;">
+                                        <button type="submit"
+                                                class="btn btn-primary btn-lg w-100 py-2 fw-semibold">
                                             <i class="bi bi-cart-plus-fill me-2"></i>
-                                            Add to Cart (Coming Soon...)
+                                            Add to Cart
                                         </button>
                                     </div>
                                 </div>

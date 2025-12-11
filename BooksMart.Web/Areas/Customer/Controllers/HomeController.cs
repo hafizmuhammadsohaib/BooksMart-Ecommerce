@@ -1,6 +1,8 @@
 using System.Diagnostics;
+using System.Security.Claims;
 using BooksMart.Data.Interfaces.Repository.IRepository;
 using BooksMart.Models.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BooksMart.Web.Areas.Customer.Controllers
@@ -24,15 +26,43 @@ namespace BooksMart.Web.Areas.Customer.Controllers
         }
         public async Task<IActionResult> Details(int id)
         {
-            Book? book = await unitOfWork.Book.GetByIdAsync(
-                u => u.Id == id,
-                includeProperties: "Category"
-            );
+            ShoppingCart shoppingCart = new()
+            {
+                Book = await unitOfWork.Book.GetByIdAsync(u => u.Id == id, includeProperties: "Category"),
+                Count = 1,
+                BookId = id
+            };
 
-            if (book == null)
-                return NotFound();
+            return View(shoppingCart);
+        }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Details(int bookId, int count)
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            return View(book);
+            ShoppingCart shoppingCartFromDb = await unitOfWork.ShoppingCart
+                .GetByIdAsync(u => u.ApplicationUserId == userId && u.BookId == bookId);
+
+            if (shoppingCartFromDb != null)
+            {
+                shoppingCartFromDb.Count += count;
+                unitOfWork.ShoppingCart.Update(shoppingCartFromDb);
+            }
+            else
+            {
+                var newCart = new ShoppingCart
+                {
+                    ApplicationUserId = userId,
+                    BookId = bookId,
+                    Count = count
+                };
+                await unitOfWork.ShoppingCart.AddAsync(newCart);
+            }
+            TempData["success"] = "Cart Updated Successfully";
+            await unitOfWork.SaveAsync();
+            return RedirectToAction(nameof(Index));
         }
 
 

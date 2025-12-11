@@ -9,7 +9,9 @@ namespace BooksMart.Data.Interfaces.Repository
         public ICategoryRepository Category { get; private set; }
 
         public IBookRepository Book { get; private set; }
-        public ICompanyRepository Company { get; private set; }
+        public ICompanyRepository Company { get; private set; } 
+        public IShoppingCartRepository ShoppingCart { get; private set; }
+        public IApplicationUserRepository ApplicationUser { get; private set; }
 
         public UnitOfWork(ApplicationDbContext dbContext)
         {
@@ -17,6 +19,8 @@ namespace BooksMart.Data.Interfaces.Repository
             Category = new CategoryRepository(dbContext);
             Book = new BookRepository(dbContext);
             Company = new CompanyRepository(dbContext);
+            ShoppingCart = new ShoppingCartRepository(dbContext);
+            ApplicationUser = new ApplicationUserRepository(dbContext);
         }
 
         public async Task SaveAsync()

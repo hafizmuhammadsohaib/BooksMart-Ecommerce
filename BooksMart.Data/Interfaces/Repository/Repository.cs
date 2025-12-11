@@ -2,6 +2,7 @@
 using BooksMart.Data.Interfaces.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace BooksMart.Data.Interfaces.Repository
 {
@@ -16,9 +17,13 @@ namespace BooksMart.Data.Interfaces.Repository
             dbContext.Books.Include(u => u.Category).Include(u => u.CategoryId);
         }
 
-        public async Task<IEnumerable<T>> GetAll(string? includeProperties = null)
+        public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>>? expression,string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
+            if (expression != null)
+            {
+                query = query.Where(expression);
+            }
             if (!string.IsNullOrEmpty(includeProperties))
             {
                 foreach (var includeProp in includeProperties
@@ -29,9 +34,17 @@ namespace BooksMart.Data.Interfaces.Repository
             }
             return await query.ToListAsync(); 
         }
-        public async Task<T?> GetByIdAsync(Expression<Func<T, bool>> expression, string? includeProperties = null)
+        public async Task<T?> GetByIdAsync(Expression<Func<T, bool>> expression, string? includeProperties = null, bool tracked = false)
         {
-            IQueryable<T> query = dbSet;
+            IQueryable<T> query;
+            if (tracked)
+            {
+                query = dbSet;
+            }
+            else
+            {
+                query = dbSet.AsNoTracking();
+            }
             query = query.Where(expression);
             if (!string.IsNullOrEmpty(includeProperties))
             {

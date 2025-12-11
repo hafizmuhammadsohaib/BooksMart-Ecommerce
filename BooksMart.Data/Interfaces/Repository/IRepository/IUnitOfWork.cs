@@ -7,6 +7,8 @@ namespace BooksMart.Data.Interfaces.Repository.IRepository
         ICategoryRepository Category { get; }
         IBookRepository Book { get; }
         ICompanyRepository Company { get; }
+        IShoppingCartRepository ShoppingCart { get; }
+        IApplicationUserRepository ApplicationUser { get; }
         Task SaveAsync();
     }
 }
