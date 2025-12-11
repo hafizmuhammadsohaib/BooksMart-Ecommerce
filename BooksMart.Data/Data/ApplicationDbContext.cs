@@ -13,6 +13,7 @@ namespace BooksMart.Data.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<ApplicationUser> applicationUsers { get; set; }
+        public DbSet<Company> Companies { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -21,6 +22,28 @@ namespace BooksMart.Data.Data
                 new Category { Id = 2, Name = "Adventure", DisplayOrder = 2 },
                 new Category { Id = 3, Name = "Horror", DisplayOrder = 3 }
                 );
+
+            modelBuilder.Entity<Company>().HasData(
+               new Company
+               {
+                   Id = 1,
+                   Name = "Elare Official",
+                   Address = "427 C Block Pak Arab",
+                   City = "Lahore",
+                   Province = "Punjab",
+                   PostalCode = "54600",
+                   PhoneNumber = "123-456-7890"
+               },
+               new Company
+               {
+                   Id = 2,
+                   Name = "ABC Logistics",
+                   Address = "Iqbal Town",
+                   City = "Lahore",
+                   Province = "Punjab",
+                   PostalCode = "123456",
+                   PhoneNumber = "090078601"
+               });
 
             modelBuilder.Entity<Book>().HasData(
                 new Book

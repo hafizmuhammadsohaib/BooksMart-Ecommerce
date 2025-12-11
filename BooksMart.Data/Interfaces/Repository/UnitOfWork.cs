@@ -9,12 +9,14 @@ namespace BooksMart.Data.Interfaces.Repository
         public ICategoryRepository Category { get; private set; }
 
         public IBookRepository Book { get; private set; }
+        public ICompanyRepository Company { get; private set; }
 
         public UnitOfWork(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
             Category = new CategoryRepository(dbContext);
             Book = new BookRepository(dbContext);
+            Company = new CompanyRepository(dbContext);
         }
 
         public async Task SaveAsync()

@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using BooksMart.Data.Interfaces.Repository.IRepository;
 using BooksMart.Models.Models;
 using BooksMart.Utilities;
 using Microsoft.AspNetCore.Authentication;
@@ -34,6 +35,7 @@ namespace BooksMart.Web.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<IdentityUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IUnitOfWork _unitOfWork;
 
         public RegisterModel(
             UserManager<IdentityUser> userManager,
@@ -41,7 +43,8 @@ namespace BooksMart.Web.Areas.Identity.Pages.Account
             IUserStore<IdentityUser> userStore,
             SignInManager<IdentityUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -50,6 +53,7 @@ namespace BooksMart.Web.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -116,8 +120,9 @@ namespace BooksMart.Web.Areas.Identity.Pages.Account
             public string? Province { get; set; }
             public string? PostalCode { get; set; }
             public string? PhoneNumber { get; set; }
-
-
+            public int? CompanyId { get; set; }
+            [ValidateNever]
+            public IEnumerable<SelectListItem> CompaniesList { get; set; }
         }
 
 
@@ -130,13 +135,21 @@ namespace BooksMart.Web.Areas.Identity.Pages.Account
                 _roleManager.CreateAsync(new IdentityRole(CD.Role_Admin)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(CD.Role_Company)).GetAwaiter().GetResult();
             }
+            var companies = await _unitOfWork.Company.GetAll();
             Input = new()
             {
                 RolesList = _roleManager.Roles.Select(x => x.Name).Select(i => new SelectListItem
                 {
                     Text = i,
                     Value = i
+                }),
+                CompaniesList = companies
+                .Select(i => new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
                 })
+                .ToList()
             };
 
 
@@ -161,7 +174,10 @@ namespace BooksMart.Web.Areas.Identity.Pages.Account
                 user.Province = Input.Province;
                 user.PhoneNumber = Input.PhoneNumber;
 
-
+                if(Input.Role == CD.Role_Company)
+                {
+                    user.CompanyId = Input.CompanyId;
+                }
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 

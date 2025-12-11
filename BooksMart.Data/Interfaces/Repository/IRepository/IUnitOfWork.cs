@@ -6,6 +6,7 @@ namespace BooksMart.Data.Interfaces.Repository.IRepository
     {
         ICategoryRepository Category { get; }
         IBookRepository Book { get; }
+        ICompanyRepository Company { get; }
         Task SaveAsync();
     }
 }

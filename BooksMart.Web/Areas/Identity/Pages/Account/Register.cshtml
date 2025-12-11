@@ -97,6 +97,13 @@
                                                     <label class="text-muted"><i class="bi bi-person-badge me-2"></i>Role</label>
                                                 </div>
                                             </div>
+                                            <div class="col-md-6">
+                                                <div class="form-floating">
+                                                    <select asp-for="Input.CompanyId" style="display:none" asp-items="@Model.Input.CompaniesList" class="form-select rounded-3">
+                                                        <option disabled selected>-Select Company-</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -205,4 +212,17 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function(){
+            $('#Input_Role').change(function(){
+                var selection = $('#Input_Role Option:Selected').text();
+                if(selection=='Company'){
+                    $('#Input_CompanyId').show();
+                }
+                else{
+                    $('#Input_CompanyId').hide();
+                }
+            })
+        })
+    </script>
 }
