@@ -1,4 +1,5 @@
 using BooksMart.Data.Data;
+using BooksMart.Data.DbInitializer;
 using BooksMart.Data.Interfaces.Repository;
 using BooksMart.Data.Interfaces.Repository.IRepository;
 using BooksMart.Utilities;
@@ -21,6 +22,8 @@ builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Str
 
 builder.Services.AddIdentity<IdentityUser,IdentityRole>().
     AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+
+
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -51,6 +54,7 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+builder.Services.AddScoped<IDbInitializer, DbInitializer>();
 
 
 builder.Services.AddRazorPages();
@@ -73,9 +77,19 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
+SeedDatabase();
 app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+void SeedDatabase()
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+        dbInitializer.Initialize();
+    }
+}

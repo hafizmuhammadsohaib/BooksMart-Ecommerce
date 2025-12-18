@@ -128,13 +128,7 @@ namespace BooksMart.Web.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            if (!_roleManager.RoleExistsAsync(CD.Role_Customer).GetAwaiter().GetResult())
-            {
-                _roleManager.CreateAsync(new IdentityRole(CD.Role_Customer)).GetAwaiter().GetResult();
-                _roleManager.CreateAsync(new IdentityRole(CD.Role_Employee)).GetAwaiter().GetResult();
-                _roleManager.CreateAsync(new IdentityRole(CD.Role_Admin)).GetAwaiter().GetResult();
-                _roleManager.CreateAsync(new IdentityRole(CD.Role_Company)).GetAwaiter().GetResult();
-            }
+            
             var companies = await _unitOfWork.Company.GetAll();
             Input = new()
             {
