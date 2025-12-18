@@ -121,7 +121,7 @@ namespace BooksMart.Web.Areas.Admin.Controllers
 
             orderVM.OrderHeader = await unitOfWork.OrderHeader.GetByIdAsync(u => u.Id == orderVM.OrderHeader.Id, includeProperties: "ApplicationUser");
                 orderVM.OrderDetail = await unitOfWork.OrderDetail.GetAll(u => u.OrderHeaderId == orderVM.OrderHeader.Id, includeProperties: "Book");
-            var domain = "https://localhost:7175/";
+            var domain = Request.Scheme+ "://"+Request.Host.Value+"/";
             var options = new SessionCreateOptions
             {
                 SuccessUrl = domain + $"admin/order/PaymentConfirmation?orderHeaderId={orderVM.OrderHeader.Id}",

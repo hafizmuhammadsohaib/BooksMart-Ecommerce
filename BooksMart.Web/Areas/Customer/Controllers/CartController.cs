@@ -131,7 +131,7 @@ namespace BooksMart.Web.Areas.Customer.Controllers
 
             if (applicationUser.CompanyId.GetValueOrDefault() == 0)
             {
-                var domain = "https://localhost:7175/";
+                var domain = Request.Scheme + "://" + Request.Host.Value + "/";
                 //make payment with stripe for regular user
                 var options = new SessionCreateOptions
                 {
