@@ -114,7 +114,7 @@ namespace BooksMart.Web.Areas.Identity.Pages.Account
             public IEnumerable<SelectListItem> RolesList { get; set; }
 
             [Required]
-            public string FullName { get; set; }
+            public string Name { get; set; }
             public string? Address { get; set; }
             public string? City { get; set; }
             public string? Province { get; set; }
@@ -167,7 +167,7 @@ namespace BooksMart.Web.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                user.Name = Input.FullName;
+                user.Name = Input.Name;
                 user.Address = Input.Address;
                 user.City = Input.City;
                 user.PostalCode = Input.PostalCode;
@@ -210,7 +210,15 @@ namespace BooksMart.Web.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        if (User.IsInRole(CD.Role_Admin))
+                        {
+                            TempData["success"] = "New User Created Successfully";
+                        }
+                        else
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+                           
+                        }
                         return LocalRedirect(returnUrl);
                     }
                 }

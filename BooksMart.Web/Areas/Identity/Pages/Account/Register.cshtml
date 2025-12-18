@@ -9,10 +9,21 @@
         <div class="col-lg-11 col-xl-10">
             <div class="card shadow-lg border-0 rounded-4">
                 <div class="card-body p-4 p-md-5">
-                    <div class="text-center mb-4">
-                        <h1 class="display-5 fw-bold text-primary mb-2">@ViewData["Title"]</h1>
-                        <p class="text-muted">Join our community today</p>
-                    </div>
+                    @if (User.IsInRole(CD.Role_Admin))
+                    {
+                        <div class="text-center mb-4">
+                            <h1 class="display-5 fw-bold text-primary mb-2">@ViewData["Title"] - Admin Portal</h1>
+                            <p class="text-muted">Join our community today</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center mb-4">
+                            <h1 class="display-5 fw-bold text-primary mb-2">@ViewData["Title"]</h1>
+                            <p class="text-muted">Join our community today</p>
+                        </div>
+                    }
+                   
 
                     <div class="row g-4">
                         <div class="col-lg-7">
@@ -33,10 +44,10 @@
                                         <div class="row g-3">
                                             <div class="col-md-6">
                                                 <div class="form-floating">
-                                                    <input asp-for="Input.FullName" class="form-control rounded-3" aria-required="true" />
-                                                    <label asp-for="Input.FullName" class="text-muted"><i class="bi bi-person me-2"></i>Full Name</label>
+                                                    <input asp-for="Input.Name" class="form-control rounded-3" aria-required="true" />
+                                                    <label asp-for="Input.Name" class="text-muted"><i class="bi bi-person me-2"></i>Full Name</label>
                                                 </div>
-                                                <span asp-validation-for="Input.FullName" class="text-danger small"></span>
+                                                <span asp-validation-for="Input.Name" class="text-danger small"></span>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-floating">
@@ -89,21 +100,24 @@
                                                 </div>
                                                 <span asp-validation-for="Input.PostalCode" class="text-danger small"></span>
                                             </div>
-                                            <div class="col-md-6">
-                                                <div class="form-floating">
-                                                    <select asp-for="Input.Role" asp-items="@Model.Input.RolesList" class="form-select rounded-3">
-                                                        <option disabled selected>-Select Role-</option>
-                                                    </select>
-                                                    <label class="text-muted"><i class="bi bi-person-badge me-2"></i>Role</label>
+                                            @if (User.IsInRole(CD.Role_Admin))
+                                            {
+                                                <div class="col-md-6">
+                                                    <div class="form-floating">
+                                                        <select asp-for="Input.Role" asp-items="@Model.Input.RolesList" class="form-select rounded-3">
+                                                            <option disabled selected>-Select Role-</option>
+                                                        </select>
+                                                        <label class="text-muted"><i class="bi bi-person-badge me-2"></i>Role</label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="form-floating">
-                                                    <select asp-for="Input.CompanyId" style="display:none" asp-items="@Model.Input.CompaniesList" class="form-select rounded-3">
-                                                        <option disabled selected>-Select Company-</option>
-                                                    </select>
+                                                <div class="col-md-6">
+                                                    <div class="form-floating">
+                                                        <select asp-for="Input.CompanyId" style="display:none" asp-items="@Model.Input.CompaniesList" class="form-select rounded-3">
+                                                            <option disabled selected>-Select Company-</option>
+                                                        </select>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            }
                                         </div>
                                     </div>
 
@@ -142,60 +156,63 @@
                                 </form>
                             </div>
                         </div>
-
-                        <div class="col-lg-5">
-                            <div class="h-100 d-flex flex-column bg-light rounded-4 p-4">
-                                <section class="flex-grow-1">
-                                    <div class="mb-4">
-                                        <h3 class="h4 fw-semibold text-dark mb-1">Quick Registration</h3>
-                                        <p class="text-muted small">Use your social account for faster signup</p>
-                                    </div>
-
-                                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                                        <div class="d-grid gap-3">
-                                            <button type="submit" class="btn btn-outline-danger btn-lg rounded-3 d-flex align-items-center justify-content-center shadow-sm" name="provider" value="Google" title="Log in using your Google account">
-                                                <i class="bi bi-google me-2"></i>
-                                                Continue with Google
-                                            </button>
-
-                                            <button type="submit" class="btn btn-outline-primary btn-lg rounded-3 d-flex align-items-center justify-content-center shadow-sm" name="provider" value="Facebook" title="Log in using your Facebook account">
-                                                <i class="bi bi-facebook me-2"></i>
-                                                Continue with Facebook
-                                            </button>
+                            @if (!User.IsInRole(CD.Role_Admin))
+                        {
+                            <div class="col-lg-5">
+                                <div class="h-100 d-flex flex-column bg-light rounded-4 p-4">
+                                    <section class="flex-grow-1">
+                                        <div class="mb-4">
+                                            <h3 class="h4 fw-semibold text-dark mb-1">Quick Registration</h3>
+                                            <p class="text-muted small">Use your social account for faster signup</p>
                                         </div>
-                                    </form>
 
-                                    @if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                                    {
-                                        <div class="alert alert-warning rounded-3 border-0 mt-3" role="alert">
-                                            <div class="d-flex align-items-start">
-                                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                                <small>External logins not configured. <a href="https://go.microsoft.com/fwlink/?LinkID=532715" class="alert-link">Learn more</a></small>
+                                        <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                                            <div class="d-grid gap-3">
+                                                <button type="submit" class="btn btn-outline-danger btn-lg rounded-3 d-flex align-items-center justify-content-center shadow-sm" name="provider" value="Google" title="Log in using your Google account">
+                                                    <i class="bi bi-google me-2"></i>
+                                                    Continue with Google
+                                                </button>
+
+                                                <button type="submit" class="btn btn-outline-primary btn-lg rounded-3 d-flex align-items-center justify-content-center shadow-sm" name="provider" value="Facebook" title="Log in using your Facebook account">
+                                                    <i class="bi bi-facebook me-2"></i>
+                                                    Continue with Facebook
+                                                </button>
                                             </div>
+                                        </form>
+
+                                        @if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                                        {
+                                            <div class="alert alert-warning rounded-3 border-0 mt-3" role="alert">
+                                                <div class="d-flex align-items-start">
+                                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                                    <small>External logins not configured. <a href="https://go.microsoft.com/fwlink/?LinkID=532715" class="alert-link">Learn more</a></small>
+                                                </div>
+                                            </div>
+                                        }
+
+                                        <div class="mt-4 p-3 bg-white rounded-3 border">
+                                            <h6 class="fw-semibold mb-2 text-dark">
+                                                <i class="bi bi-info-circle text-primary me-2"></i>Why Register?
+                                            </h6>
+                                            <ul class="small text-muted mb-0 ps-3">
+                                                <li class="mb-1">Track your orders easily</li>
+                                                <li class="mb-1">Save your favorite books</li>
+                                                <li class="mb-1">Get exclusive deals</li>
+                                                <li>Fast checkout process</li>
+                                            </ul>
                                         </div>
-                                    }
+                                    </section>
 
-                                    <div class="mt-4 p-3 bg-white rounded-3 border">
-                                        <h6 class="fw-semibold mb-2 text-dark">
-                                            <i class="bi bi-info-circle text-primary me-2"></i>Why Register?
-                                        </h6>
-                                        <ul class="small text-muted mb-0 ps-3">
-                                            <li class="mb-1">Track your orders easily</li>
-                                            <li class="mb-1">Save your favorite books</li>
-                                            <li class="mb-1">Get exclusive deals</li>
-                                            <li>Fast checkout process</li>
-                                        </ul>
+                                    <div class="mt-4 pt-4 border-top">
+                                        <p class="text-center text-muted small mb-0">
+                                            Already have an account?
+                                            <a asp-page="./Login" class="text-primary fw-semibold text-decoration-none">Sign in here</a>
+                                        </p>
                                     </div>
-                                </section>
-
-                                <div class="mt-4 pt-4 border-top">
-                                    <p class="text-center text-muted small mb-0">
-                                        Already have an account?
-                                        <a asp-page="./Login" class="text-primary fw-semibold text-decoration-none">Sign in here</a>
-                                    </p>
                                 </div>
                             </div>
-                        </div>
+                        }
+                        
                     </div>
                 </div>
             </div>

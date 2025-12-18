@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Security.Claims;
 using BooksMart.Data.Interfaces.Repository.IRepository;
 using BooksMart.Models.Models;
+using BooksMart.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,6 +50,7 @@ namespace BooksMart.Web.Areas.Customer.Controllers
             {
                 shoppingCartFromDb.Count += count;
                 unitOfWork.ShoppingCart.Update(shoppingCartFromDb);
+                await unitOfWork.SaveAsync();
             }
             else
             {
@@ -59,9 +61,11 @@ namespace BooksMart.Web.Areas.Customer.Controllers
                     Count = count
                 };
                 await unitOfWork.ShoppingCart.AddAsync(newCart);
+                await unitOfWork.SaveAsync();
             }
+            var cartItems = await unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId);
+            HttpContext.Session.SetInt32(CD.SessionCart, cartItems.Count());
             TempData["success"] = "Cart Updated Successfully";
-            await unitOfWork.SaveAsync();
             return RedirectToAction(nameof(Index));
         }
 

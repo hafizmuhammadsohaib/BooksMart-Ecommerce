@@ -9,5 +9,6 @@ namespace BooksMart.Data.Interfaces.Repository.IRepository
         Task AddAsync(T entity);
         void Delete(T entity);
         void DeleteRange(IEnumerable<T> entities);
+        Task<int> CountAsync(Expression<Func<T, bool>>? expression = null);
     }
 }

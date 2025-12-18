@@ -181,6 +181,7 @@ namespace BooksMart.Web.Areas.Customer.Controllers
                     unitOfWork.OrderHeader.UpdateOrderStatus(id, CD.StatusApproved, CD.PaymentStatusApproved);
                     await unitOfWork.SaveAsync();
                 }
+                HttpContext.Session.Clear();
             }
 
             var carts = await unitOfWork.ShoppingCart
@@ -190,7 +191,7 @@ namespace BooksMart.Web.Areas.Customer.Controllers
 
             unitOfWork.ShoppingCart.DeleteRange(shoppingCarts);
             await unitOfWork.SaveAsync();
-
+            HttpContext.Session.SetInt32(CD.SessionCart, 0);
 
             return View(id);
         }
@@ -214,6 +215,16 @@ namespace BooksMart.Web.Areas.Customer.Controllers
                 }
             }
         }
+
+        private async Task UpdateSessionCartCount()
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var cartItems = await unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId);
+            HttpContext.Session.SetInt32(CD.SessionCart, cartItems.Count());
+        }
+
+
         public async Task<IActionResult> Plus(int cartId)
         {
             var cartFromDB = await unitOfWork.ShoppingCart.GetByIdAsync(u => u.Id == cartId);
@@ -227,11 +238,12 @@ namespace BooksMart.Web.Areas.Customer.Controllers
             unitOfWork.ShoppingCart.Update(cartFromDB);
 
             await unitOfWork.SaveAsync();
+            await UpdateSessionCartCount();
             return RedirectToAction(nameof(Index));
         }
         public async Task<IActionResult> Minus(int cartId)
         {
-            var cartFromDB = await unitOfWork.ShoppingCart.GetByIdAsync(u => u.Id == cartId);
+            var cartFromDB = await unitOfWork.ShoppingCart.GetByIdAsync(u => u.Id == cartId, tracked: true);
 
             if (cartFromDB == null) return NotFound();
 
@@ -248,17 +260,19 @@ namespace BooksMart.Web.Areas.Customer.Controllers
 
 
             await unitOfWork.SaveAsync();
+            await UpdateSessionCartCount();
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Remove(int cartId)
         {
-            var cartFromDB = await unitOfWork.ShoppingCart.GetByIdAsync(u => u.Id == cartId);
+            var cartFromDB = await unitOfWork.ShoppingCart.GetByIdAsync(u => u.Id == cartId,tracked:true);
 
             if (cartFromDB == null) return NotFound();
 
             unitOfWork.ShoppingCart.Delete(cartFromDB);
             await unitOfWork.SaveAsync();
+            await UpdateSessionCartCount();
             return RedirectToAction(nameof(Index));
         }
 

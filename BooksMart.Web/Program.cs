@@ -1,10 +1,11 @@
 using BooksMart.Data.Data;
 using BooksMart.Data.Interfaces.Repository;
 using BooksMart.Data.Interfaces.Repository.IRepository;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using BooksMart.Utilities;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
 using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +29,29 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 
 });
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(@"./keys"))
+    .SetApplicationName("BooksMart");
+builder.Services.AddAuthentication().AddFacebook(options =>
+{
+    //options.AppId = builder.Configuration.GetSection("FacebookLogin:AppId").Get<string>();
+    //options.AppSecret = builder.Configuration.GetSection("FacebookLogin:AppSecret").Get<string>();
+    options.AppId = "1174572301050211";
+    options.AppSecret = "953755ec44d4740cf3acdb27be8dd9c6";
+    options.CallbackPath = "/signin-facebook";
+    options.SaveTokens = true;
+
+});
+
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(100);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -48,6 +72,7 @@ StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey"
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
