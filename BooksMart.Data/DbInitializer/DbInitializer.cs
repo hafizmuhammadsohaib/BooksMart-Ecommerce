@@ -53,7 +53,7 @@ namespace BooksMart.Data.DbInitializer
                 userManager.CreateAsync(new ApplicationUser
                 {
                     UserName = "admin@BooksMart.com",
-                    Email = "",
+                    Email = "admin@BooksMart.com",
                     Name = "Admin User",
                     PhoneNumber = "111-222-3333",
                     Address = "123 Admin St",
