@@ -3,6 +3,8 @@ using BooksMart.Models.Models;
 using BooksMart.Models.ViewModels;
 using BooksMart.Utilities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Stripe.Checkout;
 using System.Security.Claims;
@@ -14,11 +16,14 @@ namespace BooksMart.Web.Areas.Customer.Controllers
     public class CartController : Controller
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly IEmailSender emailSender;
+
         [BindProperty]
         public ShoppingCartVM shoppingCartVM { get; set; }
-        public CartController(IUnitOfWork unitOfWork)
+        public CartController(IUnitOfWork unitOfWork, IEmailSender emailSender)
         {
             this.unitOfWork = unitOfWork;
+            this.emailSender = emailSender;
         }
         public async Task<IActionResult> Index()
         {
@@ -186,6 +191,10 @@ namespace BooksMart.Web.Areas.Customer.Controllers
 
             var carts = await unitOfWork.ShoppingCart
             .GetAll(x => x.ApplicationUserId == orderHeader.ApplicationUserId);
+
+            emailSender.SendEmailAsync(orderHeader.ApplicationUser.Email,
+                "BooksMart - Thankyou for Choosing Us!",
+                $"<p>Your Order has been Placed Successfully. Your order id is {orderHeader.Id}</p>");
 
             List<ShoppingCart> shoppingCarts = carts.ToList();
 
