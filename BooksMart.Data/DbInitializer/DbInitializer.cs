@@ -31,26 +31,29 @@ namespace BooksMart.Data.DbInitializer
         {
             try
             {
-                if (applicationDbContext.Database.GetPendingMigrations().Count() > 0)
+                if (applicationDbContext.Database.GetPendingMigrations().Any())
                 {
                     applicationDbContext.Database.Migrate();
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }
 
-            if (!roleManager.RoleExistsAsync(CD.Role_Customer).GetAwaiter().GetResult())
+            if (!roleManager.RoleExistsAsync(CD.Role_Admin).GetAwaiter().GetResult())
             {
                 roleManager.CreateAsync(new IdentityRole(CD.Role_Customer)).GetAwaiter().GetResult();
                 roleManager.CreateAsync(new IdentityRole(CD.Role_Employee)).GetAwaiter().GetResult();
                 roleManager.CreateAsync(new IdentityRole(CD.Role_Admin)).GetAwaiter().GetResult();
                 roleManager.CreateAsync(new IdentityRole(CD.Role_Company)).GetAwaiter().GetResult();
+            }
 
+            var adminUser = userManager.FindByEmailAsync("admin@BooksMart.com").GetAwaiter().GetResult();
 
-
-                userManager.CreateAsync(new ApplicationUser
+            if (adminUser == null)
+            {
+                var user = new ApplicationUser
                 {
                     UserName = "admin@BooksMart.com",
                     Email = "admin@BooksMart.com",
@@ -59,15 +62,14 @@ namespace BooksMart.Data.DbInitializer
                     Address = "123 Admin St",
                     City = "Admin City",
                     Province = "Admin Province",
-                    PostalCode = "A1A1A1"
-                }, "Admin123*").GetAwaiter().GetResult();
+                    PostalCode = "A1A1A1",
+                    EmailConfirmed = true
+                };
 
-                ApplicationUser user = applicationDbContext.applicationUsers.FirstOrDefault(x => x.Email == "admin@BooksMart.com");
+                userManager.CreateAsync(user, "Admin123*").GetAwaiter().GetResult();
                 userManager.AddToRoleAsync(user, CD.Role_Admin).GetAwaiter().GetResult();
-
-
             }
-            return;
         }
+
     }
 }
