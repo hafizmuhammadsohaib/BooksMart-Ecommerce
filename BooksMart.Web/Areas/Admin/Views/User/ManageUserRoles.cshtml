@@ -1,0 +1,73 @@
+﻿@model RoleManagementVM
+
+
+<div class="container mt-4">
+
+    <h2 class="mb-4 text-center">Manage User Role</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form method="post">
+                <input hidden asp-for="ApplicationUser.Id" />
+                <div class="mb-3">
+                    <label asp-for="ApplicationUser.Name"  class="form-label"></label>
+                    <input asp-for="ApplicationUser.Name" readonly class="form-control"/>
+                </div>
+
+                <div class="mb-3">
+                    <select asp-for="ApplicationUser.Role" asp-items="@Model.RolesList" class="form-control"></select>
+                </div>
+
+                @{
+                        var visible = "display:none";
+                    }
+                    @if (Model.ApplicationUser.Role == CD.Role_Company)
+                    {
+                        visible = "display: block";
+                    }
+
+                <div class="mb-3">
+                    <select asp-for="ApplicationUser.CompanyId" style="@visible" asp-items="@Model.CompaniesList" class="form-control"></select>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <button type="submit" class="btn btn-primary form-control">
+                            Update Role
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <a asp-action="Index" class="btn btn-outline-secondary border ms-2 form-control">
+                            Back to List
+                        </a>
+                    </div>
+                </div>
+
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+@* client-side validation *@
+@section Scripts {
+    @{
+
+    <partial name="_ValidationScriptsPartial" />
+    }
+    <script>
+        $(document).ready(function(){
+            $('#ApplicationUser_Role').change(function(){
+                var selection = $('#ApplicationUser_Role Option:Selected').text();
+                if(selection=='Company'){
+                    $('#ApplicationUser_CompanyId').show();
+                }
+                else{
+                    $('#ApplicationUser_CompanyId').hide();
+                }
+            })
+        })
+    </script>
+}
