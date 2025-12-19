@@ -22,14 +22,14 @@ namespace BooksMart.Web.Areas.Customer.Controllers
 
         public async Task<IActionResult> Index()
         {
-            IEnumerable<Book> books = await unitOfWork.Book.GetAll(includeProperties: "Category");
+            IEnumerable<Book> books = await unitOfWork.Book.GetAll(includeProperties: "Category,BookImages");
             return View(books);
         }
         public async Task<IActionResult> Details(int id)
         {
             ShoppingCart shoppingCart = new()
             {
-                Book = await unitOfWork.Book.GetByIdAsync(u => u.Id == id, includeProperties: "Category"),
+                Book = await unitOfWork.Book.GetByIdAsync(u => u.Id == id, includeProperties: "Category,BookImages"),
                 Count = 1,
                 BookId = id
             };

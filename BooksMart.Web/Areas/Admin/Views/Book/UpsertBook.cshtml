@@ -10,7 +10,6 @@
 
             <form asp-action="UpsertBook" method="post" enctype="multipart/form-data">
                 <input asp-for="Book.Id" hidden/>
-                <input asp-for="Book.ImageUrl" hidden/>
                 <div class="row">
                     <div class="col-10">
                         <div class="mb-3">
@@ -73,8 +72,8 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label asp-for="Book.ImageUrl" class="form-label"></label>
-                                <input type="file" name="file" class="form-control" />
+                                <label asp-for="Book.BookImages" class="form-label"></label>
+                                <input type="file" name="files" class="form-control" multiple />
                             </div>
                         </div>
                         <div class="row">
@@ -101,8 +100,19 @@
                         </div>
                     </div>
                     <div class="col-2">
-                        <img src="@Model.Book.ImageUrl" width="100%"
-                        style="border-radius=: 5px; border:1px solid #bbb9b9"/>
+                            @if (Model.Book.BookImages != null)
+                            {
+                                @foreach(var img in Model.Book.BookImages)
+                                {
+                                    <div class="border p-1 m-2 text-center">
+                                    <img src="@img.ImageUrl" width="100%"
+                                         style="border-radius=: 5px; border:1px solid #bbb9b9" />
+                                         <a asp-action="DeleteImage" class="btn btn-danger" asp-route-imgId="@img.Id">
+                                             <i class="bi bi-trash-fill"></i>Delete
+                                         </a>
+                                    </div>
+                                }
+                            }
                     </div>
                 </div>
                 

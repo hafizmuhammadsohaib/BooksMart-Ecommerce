@@ -15,13 +15,16 @@ namespace BooksMart.Web.Areas.Admin.Controllers
     [Authorize(Roles =CD.Role_Admin)]
     public class UserController : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
         private readonly UserManager<IdentityUser> userManager;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly RoleManager<IdentityRole> roleManager;
 
-        public UserController(ApplicationDbContext dbContext, UserManager<IdentityUser> userManager)
+        public UserController(UserManager<IdentityUser> userManager,
+            IUnitOfWork unitOfWork,RoleManager<IdentityRole> roleManager)
         {
-            _dbContext = dbContext;
             this.userManager = userManager;
+            this.unitOfWork = unitOfWork;
+            this.roleManager = roleManager;
         }
         public async Task<IActionResult> Index()
         {
@@ -29,37 +32,39 @@ namespace BooksMart.Web.Areas.Admin.Controllers
         }
         public async Task<IActionResult> ManageUserRoles(string userId)
         {
-            string RoleId= _dbContext.UserRoles.FirstOrDefault(u => u.UserId == userId).RoleId;
-
+            var companies = await unitOfWork.Company.GetAll();
             RoleManagementVM roleManagementVM = new()
             {
-                ApplicationUser = await _dbContext.applicationUsers.Include(t=>t.Company).FirstOrDefaultAsync(u => u.Id == userId),
-                RolesList = _dbContext.Roles.Select(r => new SelectListItem
+                ApplicationUser = await unitOfWork.ApplicationUser.GetByIdAsync(u => u.Id == userId,includeProperties:"Company"),
+                RolesList = roleManager.Roles.Select(r => new SelectListItem
                 {
                     Text = r.Name,
                     Value = r.Name,
                 }),
-                CompaniesList = _dbContext.Companies.Select(c => new SelectListItem
+                CompaniesList = companies
+                .Select(c => new SelectListItem
                 {
                     Text = c.Name,
-                    Value = c.Id.ToString(),
-                }),
+                    Value = c.Id.ToString()
+                })
+                .ToList(),
             };
-            roleManagementVM.ApplicationUser.Role = _dbContext.Roles.FirstOrDefault(r => r.Id == RoleId).Name;
+            roleManagementVM.ApplicationUser.Role = userManager.GetRolesAsync(await unitOfWork.ApplicationUser
+                .GetByIdAsync(r => r.Id == roleManagementVM.ApplicationUser.Id)).GetAwaiter().GetResult().FirstOrDefault();
 
             return View(roleManagementVM);
         }
         [HttpPost]
         public async Task<IActionResult> ManageUserRoles(RoleManagementVM roleManagementVM)
         {
-            string RoleId = _dbContext.UserRoles.FirstOrDefault(u => u.UserId == roleManagementVM.ApplicationUser.Id).RoleId;
-            string prevRole = _dbContext.Roles.FirstOrDefault(r => r.Id == RoleId).Name;
+            string prevRole =  userManager.GetRolesAsync(await unitOfWork.ApplicationUser
+                .GetByIdAsync(r => r.Id == roleManagementVM.ApplicationUser.Id)).GetAwaiter().GetResult().FirstOrDefault();
 
+            ApplicationUser user = await unitOfWork.ApplicationUser.GetByIdAsync(u => u.Id == roleManagementVM.ApplicationUser.Id);
             if (!(roleManagementVM.ApplicationUser.Role==prevRole))
             {
                 //here logic for role update
-                ApplicationUser user = await _dbContext.applicationUsers.FirstOrDefaultAsync(u => u.Id == roleManagementVM.ApplicationUser.Id);
-                if (roleManagementVM.ApplicationUser.Role==CD.Role_Company)
+               if (roleManagementVM.ApplicationUser.Role==CD.Role_Company)
                 {
                     user.CompanyId = roleManagementVM.ApplicationUser.CompanyId;
                 }
@@ -67,12 +72,20 @@ namespace BooksMart.Web.Areas.Admin.Controllers
                 {
                     user.CompanyId = null;
                 }
-                await _dbContext.SaveChangesAsync();
+                unitOfWork.ApplicationUser.Update(user);
+                await unitOfWork.SaveAsync();
 
                 userManager.RemoveFromRoleAsync(user, prevRole).GetAwaiter().GetResult();
                 userManager.AddToRoleAsync(user, roleManagementVM.ApplicationUser.Role).GetAwaiter().GetResult();
-
-
+            }
+            else
+            {
+                if(prevRole == CD.Role_Company && user.CompanyId != roleManagementVM.ApplicationUser.CompanyId)
+                {
+                    user.CompanyId = roleManagementVM.ApplicationUser.CompanyId;
+                    unitOfWork.ApplicationUser.Update(user);
+                    await unitOfWork.SaveAsync();
+                }
             }
 
             return RedirectToAction("Index");
@@ -84,14 +97,15 @@ namespace BooksMart.Web.Areas.Admin.Controllers
         [HttpGet]
         public async Task <IActionResult> GetAllUsers()
         {
-             List<ApplicationUser> users = await _dbContext.applicationUsers.Include(c=>c.Company).ToListAsync();
-            var userRoles = _dbContext.UserRoles.ToList();
-            var roles = _dbContext.Roles.ToList();
+
+            var users = await unitOfWork.ApplicationUser.GetAll(includeProperties: "Company");
+
+            List<ApplicationUser> usersList = users.ToList();
+
             foreach (var user in users)
             {
 
-                var roleId = userRoles.FirstOrDefault(u => u.UserId == user.Id).RoleId;
-                user.Role = roles.FirstOrDefault(r => r.Id == roleId).Name;
+                user.Role = userManager.GetRolesAsync(user).GetAwaiter().GetResult().FirstOrDefault();
 
 
                 if (user.Company == null)
@@ -107,8 +121,7 @@ namespace BooksMart.Web.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> LockUnlockUser([FromBody] string id)
         {
-            var objFromDb = await _dbContext.applicationUsers
-                .FirstOrDefaultAsync(u => u.Id == id);
+            var objFromDb = await unitOfWork.ApplicationUser.GetByIdAsync(u => u.Id == id);
 
             if (objFromDb == null)
             {
@@ -127,8 +140,8 @@ namespace BooksMart.Web.Areas.Admin.Controllers
                 // LOCK
                 objFromDb.LockoutEnd = DateTime.UtcNow.AddYears(100);
             }
-
-            await _dbContext.SaveChangesAsync();
+            unitOfWork.ApplicationUser.Update(objFromDb);
+            await unitOfWork.SaveAsync();
 
             return Json(new
             {

@@ -4,17 +4,17 @@ using BooksMart.Models.Models;
 
 namespace BooksMart.Data.Interfaces.Repository
 {
-    public class ApplicationUserRepository : Repository<ApplicationUser>,IApplicationUserRepository
+    public class BookImageRepository : Repository<BookImage>,IBookImageRepository
     {
         private readonly ApplicationDbContext dbContext;
 
-        public ApplicationUserRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public BookImageRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
             this.dbContext = dbContext;
         }
-        public void Update(ApplicationUser applicationUser)
+        public void Update(BookImage bookImage)
         {
-            dbContext.applicationUsers.Update(applicationUser);
+            dbContext.BookImages.Update(bookImage);
         }
     }
 }

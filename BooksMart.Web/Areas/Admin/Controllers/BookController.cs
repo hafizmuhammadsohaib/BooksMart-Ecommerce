@@ -45,12 +45,12 @@ namespace BooksMart.Web.Areas.Admin.Controllers
             }
             else
             {
-                bookVM.Book = await unitOfWork.Book.GetByIdAsync(u => u.Id == id);
+                bookVM.Book = await unitOfWork.Book.GetByIdAsync(u => u.Id == id,includeProperties: "BookImages");
                 return View(bookVM);
             }
         }
         [HttpPost]
-        public async Task<IActionResult> UpsertBook(BookVM bookVM, IFormFile? file)
+        public async Task<IActionResult> UpsertBook(BookVM bookVM, List<IFormFile> files)
         {
             if (!ModelState.IsValid)
             {
@@ -68,28 +68,6 @@ namespace BooksMart.Web.Areas.Admin.Controllers
             }
             else
             {
-                string wwwRootPath = webHostEnvironment.WebRootPath;
-                if (file!=null)
-                {
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string bookPath = Path.Combine(wwwRootPath, @"images\books");
-                    if (!string.IsNullOrEmpty(bookVM.Book.ImageUrl))
-                    {
-                        var oldImagePath = Path.Combine(
-                            wwwRootPath, bookVM.Book.ImageUrl.TrimStart('\\')
-                            );
-                        if (System.IO.File.Exists(oldImagePath))
-                        {
-                            System.IO.File.Delete(oldImagePath);
-                        }
-                    }
-
-                    using (var fileStream = new FileStream(Path.Combine(bookPath,fileName),FileMode.Create))
-                    {
-                        file.CopyTo(fileStream);
-                    }
-                    bookVM.Book.ImageUrl = @"\images\books\" + fileName;
-                }
                 if (bookVM.Book.Id == 0)
                 {
                     await unitOfWork.Book.AddAsync(bookVM.Book);
@@ -99,10 +77,74 @@ namespace BooksMart.Web.Areas.Admin.Controllers
                     unitOfWork.Book.Update(bookVM.Book);
                 }
                 await unitOfWork.SaveAsync();
-                TempData["success"] = "Book Added Successfully";
+                string wwwRootPath = webHostEnvironment.WebRootPath;
+                if (files!=null)
+                {
+
+                    foreach (var file in files)
+                    {
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        string bookPath = @"images\books\book-" + bookVM.Book.Id;
+                        string finalBookPath = Path.Combine(wwwRootPath, bookPath);
+
+                        if (!Directory.Exists(finalBookPath))
+                        {
+                            Directory.CreateDirectory(finalBookPath);
+                        }
+                        using (var fileStream = new FileStream(Path.Combine(finalBookPath, fileName), FileMode.Create))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+
+                        BookImage bookImage = new()
+                        {
+                            ImageUrl = @"\" + bookPath + @"\" + fileName,
+                            BookId = bookVM.Book.Id
+                        };
+
+                        if (bookVM.Book.BookImages == null)
+                        {
+                            bookVM.Book.BookImages = new List<BookImage>();
+                        }
+
+                        bookVM.Book.BookImages.Add(bookImage);
+
+
+                    }
+                    unitOfWork.Book.Update(bookVM.Book);
+                    await unitOfWork.SaveAsync();
+                }
+
+                TempData["success"] = "Book Created/Updated Successfully";
                 return RedirectToAction("Index");
             }
         }
+
+        public async Task<IActionResult> DeleteImage(int imgId)
+        {
+            var imageToDelete = await unitOfWork.BookImage.GetByIdAsync(u => u.Id == imgId);
+            int bookId = imageToDelete.BookId;
+            if (imageToDelete != null) {
+                if (!string.IsNullOrEmpty(imageToDelete.ImageUrl))
+                {
+                    var oldImagePath = Path.Combine(
+                                    webHostEnvironment.WebRootPath, imageToDelete.ImageUrl.TrimStart('\\')
+                                    );
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+                }
+                unitOfWork.BookImage.Delete(imageToDelete);
+                await unitOfWork.SaveAsync();
+                TempData["success"] = "Deleted Successfully!";
+            }
+
+            return RedirectToAction(nameof(UpsertBook), new { id = bookId });
+            
+        }
+
+
         #region API_CALLS
         [HttpGet]
         public async Task <IActionResult> GetAllBooks()
@@ -118,13 +160,21 @@ namespace BooksMart.Web.Areas.Admin.Controllers
             {
                 return Json(new { success = false, message = "Error While Deleting" });
             }
-            var oldImagePath = Path.Combine(
-                            webHostEnvironment.WebRootPath, bookToBeDeleted.ImageUrl.TrimStart('\\')
-                            );
-            if (System.IO.File.Exists(oldImagePath))
+            string bookPath = @"images\books\book-" + id;
+            string finalBookPath = Path.Combine(webHostEnvironment.WebRootPath, bookPath);
+
+            if (Directory.Exists(finalBookPath))
             {
-                System.IO.File.Delete(oldImagePath);
+                string[] filesPath = Directory.GetFiles(finalBookPath);
+                foreach (string path in filesPath)
+                {
+                    System.IO.File.Delete(path);
+                }
+
+
+                Directory.Delete(finalBookPath);
             }
+
             unitOfWork.Book.Delete(bookToBeDeleted);
             await unitOfWork.SaveAsync();
             return Json(new {success = true, message = "Deleted Successfully"});

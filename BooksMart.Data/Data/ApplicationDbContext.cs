@@ -17,6 +17,7 @@ namespace BooksMart.Data.Data
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<OrderHeader> OrderHeaders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<BookImage> BookImages { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -61,7 +62,6 @@ namespace BooksMart.Data.Data
                     Price50 = 90,
                     Price100 = 85,
                     CategoryId = 1,
-                    ImageUrl = ""
                 },
                 new Book
                 {
@@ -75,7 +75,6 @@ namespace BooksMart.Data.Data
                     Price50 = 33,
                     Price100 = 28,
                     CategoryId = 2,
-                    ImageUrl = ""
                 },
                 new Book
                 {
@@ -89,7 +88,6 @@ namespace BooksMart.Data.Data
                     Price50 = 45,
                     Price100 = 40,
                     CategoryId = 3,
-                    ImageUrl = ""
                 },
                 new Book
                 {
@@ -103,7 +101,6 @@ namespace BooksMart.Data.Data
                     Price50 = 65,
                     Price100 = 60,
                     CategoryId = 3,
-                    ImageUrl = ""
                 },
                 new Book
                 {
@@ -117,7 +114,6 @@ namespace BooksMart.Data.Data
                     Price50 = 27,
                     Price100 = 22,
                     CategoryId = 1,
-                    ImageUrl = ""
                 },
                 new Book
                 {
@@ -131,7 +127,6 @@ namespace BooksMart.Data.Data
                     Price50 = 23,
                     Price100 = 21,
                     CategoryId = 3,
-                    ImageUrl = ""
                 });
         }
 

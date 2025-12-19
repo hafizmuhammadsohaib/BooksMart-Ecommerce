@@ -37,8 +37,12 @@ namespace BooksMart.Web.Areas.Customer.Controllers
                 OrderHeader = new()
             };
 
+            IEnumerable<BookImage> bookImages = await unitOfWork.BookImage.GetAll();
+
+
             foreach (var cart in shoppingCartVM.ShoppingCartList)
             {
+                cart.Book.BookImages = bookImages.Where(u=>u.BookId == cart.Book.Id).ToList();
                 cart.Price = CalculateTotal(cart);
                 shoppingCartVM.OrderHeader.OrderTotal += (cart.Price * cart.Count);
             }

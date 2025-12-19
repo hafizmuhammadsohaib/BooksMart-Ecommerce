@@ -26,7 +26,50 @@
                     <!-- Left Column - Book Image -->
                     <div class="col-lg-4">
                         <div class="position-relative">
-                            <img src="@Model.Book.ImageUrl" class="img-fluid rounded-3 shadow-sm w-100" alt="@Model.Book.Title" style="object-fit: contain; background-color: #f8f9fa; max-height: 500px;" />
+                            @* <img src="@Model.Book.ImageUrl" class="img-fluid rounded-3 shadow-sm w-100" alt="@Model.Book.Title" style="object-fit: contain; background-color: #f8f9fa; max-height: 500px;" /> *@
+
+
+                            @if(Model.Book.BookImages!=null && Model.Book.BookImages.Count() > 0)
+                                {
+                                <div id="carouselExampleIndicators" class="carousel slide">
+                                    <div class="carousel-indicators">
+                                            @foreach(var img in 
+                                            Model.Book.BookImages
+                                            .Select((image,index)=>new { BookImage = image, Index = index }))
+                                            {
+                                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="@img.Index" 
+                                            class="@(img.Index==0?"active":"")" aria-current="true" aria-label="Slide 1"></button>
+                                            }
+                                         
+                                    </div>
+                                    <div class="carousel-inner">
+                                        @foreach (var img in 
+                                        Model.Book.BookImages
+                                        .Select((image, index) => new { BookImage = image, Index = index }))
+                                            {
+
+                                            <div class="@(img.Index == 0 ? "carousel-item active" : "carousel-item")">
+                                                <img src="@img.BookImage.ImageUrl" class="d-block w-100" alt="...">
+                                            </div>
+
+                                            }
+                                    </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </button>
+                                </div>
+                                }
+                                
+
+
+
+
+
                             <div class="position-absolute top-0 start-0 m-3">
                                 <span class="badge bg-primary bg-gradient px-3 py-2 fs-6">
                                     @Model.Book.Category.Name

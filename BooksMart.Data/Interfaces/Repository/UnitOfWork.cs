@@ -14,6 +14,7 @@ namespace BooksMart.Data.Interfaces.Repository
         public IApplicationUserRepository ApplicationUser { get; private set; }
         public IOrderHeaderRepository OrderHeader { get; private set; }
         public IOrderDetailRepository OrderDetail { get; private set; }
+        public IBookImageRepository BookImage { get; private set; }
 
         public UnitOfWork(ApplicationDbContext dbContext)
         {
@@ -25,6 +26,7 @@ namespace BooksMart.Data.Interfaces.Repository
             ApplicationUser = new ApplicationUserRepository(dbContext);
             OrderHeader = new OrderHeaderRepository(dbContext);
             OrderDetail = new OrderDetailRepository(dbContext);
+            BookImage = new BookImageRepository(dbContext);
         }
 
         public async Task SaveAsync()

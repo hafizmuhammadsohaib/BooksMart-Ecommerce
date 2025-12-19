@@ -26,10 +26,11 @@ namespace BooksMart.Data.Interfaces.Repository
                 objFromDb.Price50= book.Price50;
                 objFromDb.Price100 = book.Price100;
                 objFromDb.CategoryId = book.CategoryId;
-                if (book.ImageUrl != null)
-                {
-                    objFromDb.ImageUrl = book.ImageUrl;
-                }
+                objFromDb.BookImages = book.BookImages;
+                //if (book.ImageUrl != null)
+                //{
+                //    objFromDb.ImageUrl = book.ImageUrl;
+                //}
             }
             //dbContext.Books.Update(book);
         }

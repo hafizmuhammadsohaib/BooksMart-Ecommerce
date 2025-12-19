@@ -11,6 +11,7 @@ namespace BooksMart.Data.Interfaces.Repository.IRepository
         IApplicationUserRepository ApplicationUser { get; }
         IOrderHeaderRepository OrderHeader { get; }
         IOrderDetailRepository OrderDetail { get; }
+        IBookImageRepository BookImage { get; }
         Task SaveAsync();
     }
 }

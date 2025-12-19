@@ -4,6 +4,7 @@ using BooksMart.Data.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BooksMart.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251219073502_RemoveImageUrl")]
+    partial class RemoveImageUrl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -148,28 +151,6 @@ namespace BooksMart.Data.Migrations
                             Price50 = 23.0,
                             Title = "Garden of Starlight"
                         });
-                });
-
-            modelBuilder.Entity("BooksMart.Models.Models.BookImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookId");
-
-                    b.ToTable("BookImages");
                 });
 
             modelBuilder.Entity("BooksMart.Models.Models.Category", b =>
@@ -649,17 +630,6 @@ namespace BooksMart.Data.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("BooksMart.Models.Models.BookImage", b =>
-                {
-                    b.HasOne("BooksMart.Models.Models.Book", "Book")
-                        .WithMany("BookImages")
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Book");
-                });
-
             modelBuilder.Entity("BooksMart.Models.Models.OrderDetail", b =>
                 {
                     b.HasOne("BooksMart.Models.Models.Book", "Book")
@@ -767,11 +737,6 @@ namespace BooksMart.Data.Migrations
                         .HasForeignKey("CompanyId");
 
                     b.Navigation("Company");
-                });
-
-            modelBuilder.Entity("BooksMart.Models.Models.Book", b =>
-                {
-                    b.Navigation("BookImages");
                 });
 #pragma warning restore 612, 618
         }
