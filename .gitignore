@@ -367,3 +367,4 @@ appsettings.json
 appsettings.Development.json
 *.secret.json
 *.env
+BooksMart.web/appsettings.Production.json

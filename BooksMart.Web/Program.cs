@@ -39,8 +39,8 @@ builder.Services.AddAuthentication().AddFacebook(options =>
 {
     //options.AppId = builder.Configuration.GetSection("FacebookLogin:AppId").Get<string>();
     //options.AppSecret = builder.Configuration.GetSection("FacebookLogin:AppSecret").Get<string>();
-    options.AppId = "1174572301050211";
-    options.AppSecret = "953755ec44d4740cf3acdb27be8dd9c6";
+    options.AppId = builder.Configuration["Facebook:AppId"];
+    options.AppSecret = builder.Configuration["Facebook:AppSecret"];
     options.CallbackPath = "/signin-facebook";
     options.SaveTokens = true;
 
