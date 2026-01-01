@@ -1,47 +1,50 @@
-name: Build and Deploy ASP.NET Core 8 App to Azure Web App - BooksMartMVC
-
+name: Build and Deploy ASP.NET Core Web App - BooksMartMVC
 on:
   push:
     branches:
       - master
   workflow_dispatch:
-
 jobs:
   build-and-deploy:
     runs-on: windows-latest
-
     steps:
-      # 1️⃣ Checkout the repository
+      # 1️⃣ Checkout repository
       - name: Checkout code
         uses: actions/checkout@v4
-
-      # 2️⃣ Set up .NET 8 SDK
+      
+      # 2️⃣ Setup .NET 8
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-
-      # 3️⃣ Restore NuGet packages
+      
+      # 3️⃣ Restore all projects in the solution
       - name: Restore dependencies
-        run: dotnet restore
-
-      # 4️⃣ Build the project
-      - name: Build
-        run: dotnet build -c Release --no-restore
-
-      # 5️⃣ Publish the project to a local folder
-      - name: Publish
-        run: dotnet publish -c Release -o publish
-
-      # 6️⃣ Login to Azure using Service Principal (creds JSON)
+        run: dotnet restore BooksMart.slnx
+      
+      # 4️⃣ Build the solution
+      - name: Build solution
+        run: dotnet build BooksMart.slnx -c Release --no-restore
+      
+      # 5️⃣ Publish the web project (BooksMart.Web)
+      - name: Publish Web Project
+        working-directory: BooksMart.Web
+        run: dotnet publish BooksMart.Web.csproj -c Release -o publish
+      
+      # 6️⃣ List the publish folder contents (for verification)
+      - name: Verify Publish Folder
+        working-directory: BooksMart.Web
+        run: dir publish
+      
+      # 7️⃣ Azure login using service principal
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      # 7️⃣ Deploy the published folder to Azure Web App
+      
+      # 8️⃣ Deploy the publish folder to Azure Web App
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: BooksMartMVC
-          package: publish
+          package: BooksMart.Web/publish
