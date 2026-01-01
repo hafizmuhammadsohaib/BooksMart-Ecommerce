@@ -1,4 +1,5 @@
 name: Build and Deploy ASP.NET Core Web App - BooksMartMVC
+
 on:
   push:
     branches:
@@ -8,65 +9,32 @@ on:
 jobs:
   build-and-deploy:
     runs-on: windows-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-      
+
       - name: Restore dependencies
         run: dotnet restore BooksMart.slnx
-      
+
       - name: Build solution
         run: dotnet build BooksMart.slnx -c Release --no-restore
-      
+
       - name: Publish Web Project
         run: dotnet publish BooksMart.Web/BooksMart.Web.csproj -c Release -o ./publish
-      
-      - name: Fix nested wwwroot structure
-        shell: pwsh
-        working-directory: ./publish
-        run: |
-          Write-Host "Checking for nested wwwroot..."
-          
-          if (Test-Path "wwwroot/wwwroot") {
-            Write-Host "Found nested wwwroot - fixing..."
-            
-            # Move all contents from nested wwwroot to parent wwwroot
-            Get-ChildItem "wwwroot/wwwroot" -Recurse -Force | ForEach-Object {
-              $targetPath = $_.FullName -replace [regex]::Escape((Get-Item "wwwroot/wwwroot").FullName), (Get-Item "wwwroot").FullName
-              
-              if ($_.PSIsContainer) {
-                if (!(Test-Path $targetPath)) {
-                  New-Item -ItemType Directory -Path $targetPath -Force | Out-Null
-                }
-              } else {
-                $targetDir = Split-Path $targetPath -Parent
-                if (!(Test-Path $targetDir)) {
-                  New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
-                }
-                Copy-Item $_.FullName -Destination $targetPath -Force
-              }
-            }
-            
-            Remove-Item "wwwroot/wwwroot" -Recurse -Force
-            Write-Host "Fixed!"
-          }
-          
-          Write-Host "`nFinal structure:"
-          Get-ChildItem wwwroot | Select-Object Name, LastWriteTime
-      
+
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: BooksMartMVC
-          package: ./publish
+          package: ./publish/
