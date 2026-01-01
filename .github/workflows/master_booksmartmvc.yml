@@ -38,6 +38,12 @@ jobs:
           echo "=== Config files ==="
           dir *.json
           dir web.config
+
+      - name: Check web.config content
+        working-directory: BooksMart.Web/publish
+        run: |
+          echo "=== web.config contents ==="
+          type web.config
       
       - name: Azure Login
         uses: azure/login@v2
@@ -49,3 +55,4 @@ jobs:
         with:
           app-name: BooksMartMVC
           package: BooksMart.Web/publish
+
