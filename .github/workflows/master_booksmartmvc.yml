@@ -1,4 +1,4 @@
-name: Build and deploy ASP.NET Core app to Azure Web App - BooksMartMVC
+name: Build and Deploy ASP.NET Core 8 App to Azure Web App - BooksMartMVC
 
 on:
   push:
@@ -11,10 +11,11 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # 1️⃣ Checkout code
-      - uses: actions/checkout@v4
+      # 1️⃣ Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # 2️⃣ Set up .NET 8
+      # 2️⃣ Set up .NET 8 SDK
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -24,28 +25,23 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      # 4️⃣ Build project
+      # 4️⃣ Build the project
       - name: Build
         run: dotnet build -c Release --no-restore
 
-      # 5️⃣ Publish project to local folder "publish"
+      # 5️⃣ Publish the project to a local folder
       - name: Publish
         run: dotnet publish -c Release -o publish
 
-      # 6️⃣ Login to Azure using Service Principal
+      # 6️⃣ Login to Azure using Service Principal (creds JSON)
       - name: Azure Login
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          enable-AzPSSession: false
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # 7️⃣ Deploy the "publish" folder to Azure Web App
+      # 7️⃣ Deploy the published folder to Azure Web App
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: BooksMartMVC
           package: publish
-
