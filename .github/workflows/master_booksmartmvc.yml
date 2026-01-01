@@ -4,9 +4,11 @@ on:
     branches:
       - master
   workflow_dispatch:
+
 jobs:
   build-and-deploy:
     runs-on: windows-latest
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -23,46 +25,40 @@ jobs:
         run: dotnet build BooksMart.slnx -c Release --no-restore
       
       - name: Publish Web Project
-        working-directory: BooksMart.Web
-        run: dotnet publish BooksMart.Web.csproj -c Release -o publish --no-build
-
-      - name: Fix nested wwwroot issue
-        working-directory: BooksMart.Web/publish
+        run: dotnet publish BooksMart.Web/BooksMart.Web.csproj -c Release -o ./publish
+      
+      - name: Fix nested wwwroot structure
         shell: pwsh
+        working-directory: ./publish
         run: |
-          if (Test-Path "wwwroot\wwwroot") {
-          Write-Host "Fixing nested wwwroot structure..."
-
-          Get-ChildItem "wwwroot\wwwroot" -Force |
-          Move-Item -Destination "wwwroot" -Force
-
-          Remove-Item "wwwroot\wwwroot" -Recurse -Force
-
-          Write-Host "Nested wwwroot fixed successfully."
-          }
-          else {
-          Write-Host "No nested wwwroot found."
-          }
-
+          Write-Host "Checking for nested wwwroot..."
           
-      - name: Verify Publish Contents
-        working-directory: BooksMart.Web/publish
-        run: |
-          echo "=== All files in publish folder ==="
-          dir
-          echo ""
-          echo "=== DLL files ==="
-          dir *.dll
-          echo ""
-          echo "=== Config files ==="
-          dir *.json
-          dir web.config
-
-      - name: Check web.config content
-        working-directory: BooksMart.Web/publish
-        run: |
-          echo "=== web.config contents ==="
-          type web.config
+          if (Test-Path "wwwroot/wwwroot") {
+            Write-Host "Found nested wwwroot - fixing..."
+            
+            # Move all contents from nested wwwroot to parent wwwroot
+            Get-ChildItem "wwwroot/wwwroot" -Recurse -Force | ForEach-Object {
+              $targetPath = $_.FullName -replace [regex]::Escape((Get-Item "wwwroot/wwwroot").FullName), (Get-Item "wwwroot").FullName
+              
+              if ($_.PSIsContainer) {
+                if (!(Test-Path $targetPath)) {
+                  New-Item -ItemType Directory -Path $targetPath -Force | Out-Null
+                }
+              } else {
+                $targetDir = Split-Path $targetPath -Parent
+                if (!(Test-Path $targetDir)) {
+                  New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
+                }
+                Copy-Item $_.FullName -Destination $targetPath -Force
+              }
+            }
+            
+            Remove-Item "wwwroot/wwwroot" -Recurse -Force
+            Write-Host "Fixed!"
+          }
+          
+          Write-Host "`nFinal structure:"
+          Get-ChildItem wwwroot | Select-Object Name, LastWriteTime
       
       - name: Azure Login
         uses: azure/login@v2
@@ -73,7 +69,4 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: BooksMartMVC
-          package: BooksMart.Web/publish
-
-
-
+          package: ./publish
