@@ -32,12 +32,18 @@ jobs:
         run: |
           if (Test-Path "wwwroot\wwwroot") {
           Write-Host "Fixing nested wwwroot structure..."
-          Get-ChildItem "wwwroot\wwwroot" | Move-Item -Destination "wwwroot\" -Force
+
+          Get-ChildItem "wwwroot\wwwroot" -Force |
+          Move-Item -Destination "wwwroot" -Force
+
           Remove-Item "wwwroot\wwwroot" -Recurse -Force
-          Write-Host "Fixed!"
-          } else {
-          Write-Host "No nested wwwroot found - structure is correct"
+
+          Write-Host "Nested wwwroot fixed successfully."
           }
+          else {
+          Write-Host "No nested wwwroot found."
+          }
+
           
       - name: Verify Publish Contents
         working-directory: BooksMart.Web/publish
@@ -68,5 +74,6 @@ jobs:
         with:
           app-name: BooksMartMVC
           package: BooksMart.Web/publish
+
 
 
