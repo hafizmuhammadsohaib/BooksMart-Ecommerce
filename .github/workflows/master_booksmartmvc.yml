@@ -11,7 +11,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # 1️⃣ Checkout the repository
+      # 1️⃣ Checkout repository
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -31,9 +31,9 @@ jobs:
 
       # 5️⃣ Publish the web project only
       - name: Publish Web Project
-        run: dotnet publish BookMart.Web/BookMart.Web.csproj -c Release -o BookMart.Web/publish
+        run: dotnet publish BookMart.Web/BooksMart.Web.csproj -c Release -o BookMart.Web/publish
 
-      # 6️⃣ Azure login using Service Principal creds
+      # 6️⃣ Azure login
       - name: Azure Login
         uses: azure/login@v2
         with:
