@@ -40,6 +40,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          enable-AzPSSession: false
 
       # 7️⃣ Deploy the "publish" folder to Azure Web App
       - name: Deploy to Azure Web App
@@ -47,3 +48,4 @@ jobs:
         with:
           app-name: BooksMartMVC
           package: publish
+
