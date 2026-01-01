@@ -11,7 +11,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      # 1️⃣ Checkout repository
+      # 1️⃣ Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -29,19 +29,25 @@ jobs:
       - name: Build solution
         run: dotnet build BooksMart.slnx -c Release --no-restore
 
-      # 5️⃣ Publish the web project only
+      # 5️⃣ Publish the web project (N-tier web project)
       - name: Publish Web Project
-        run: dotnet publish BookMart.Web/BooksMart.Web.csproj -c Release -o BookMart.Web/publish
+        working-directory: ./BookMart.Web
+        run: dotnet publish BooksMart.Web.csproj -c Release -o publish
 
-      # 6️⃣ Azure login
+      # 6️⃣ List publish folder contents (optional, helps debug DLL and web.config)
+      - name: List published files
+        working-directory: ./BookMart.Web
+        run: dir publish
+
+      # 7️⃣ Azure login using service principal (ensure AZURE_CREDENTIALS secret exists)
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # 7️⃣ Deploy the publish folder to Azure
+      # 8️⃣ Deploy the publish folder to Azure Web App
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: BooksMartMVC
-          package: BookMart.Web/publish
+          package: ./BookMart.Web/publish
