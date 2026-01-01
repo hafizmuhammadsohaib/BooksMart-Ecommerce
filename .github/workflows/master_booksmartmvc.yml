@@ -8,41 +8,42 @@ jobs:
   build-and-deploy:
     runs-on: windows-latest
     steps:
-      # 1️⃣ Checkout repository
       - name: Checkout code
         uses: actions/checkout@v4
       
-      # 2️⃣ Setup .NET 8
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
       
-      # 3️⃣ Restore all projects in the solution
       - name: Restore dependencies
         run: dotnet restore BooksMart.slnx
       
-      # 4️⃣ Build the solution
       - name: Build solution
         run: dotnet build BooksMart.slnx -c Release --no-restore
       
-      # 5️⃣ Publish the web project (BooksMart.Web)
       - name: Publish Web Project
         working-directory: BooksMart.Web
-        run: dotnet publish BooksMart.Web.csproj -c Release -o publish
+        run: dotnet publish BooksMart.Web.csproj -c Release -o publish --no-build
       
-      # 6️⃣ List the publish folder contents (for verification)
-      - name: Verify Publish Folder
-        working-directory: BooksMart.Web
-        run: dir publish
+      - name: Verify Publish Contents
+        working-directory: BooksMart.Web/publish
+        run: |
+          echo "=== All files in publish folder ==="
+          dir
+          echo ""
+          echo "=== DLL files ==="
+          dir *.dll
+          echo ""
+          echo "=== Config files ==="
+          dir *.json
+          dir web.config
       
-      # 7️⃣ Azure login using service principal
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       
-      # 8️⃣ Deploy the publish folder to Azure Web App
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
