@@ -34,10 +34,4 @@
     <Folder Include="wwwroot\images\books\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="web.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
 </Project>
