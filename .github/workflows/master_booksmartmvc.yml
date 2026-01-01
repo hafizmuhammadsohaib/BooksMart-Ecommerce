@@ -25,7 +25,20 @@ jobs:
       - name: Publish Web Project
         working-directory: BooksMart.Web
         run: dotnet publish BooksMart.Web.csproj -c Release -o publish --no-build
-      
+
+      - name: Fix nested wwwroot issue
+        working-directory: BooksMart.Web/publish
+        shell: pwsh
+        run: |
+          if (Test-Path "wwwroot\wwwroot") {
+          Write-Host "Fixing nested wwwroot structure..."
+          Get-ChildItem "wwwroot\wwwroot" | Move-Item -Destination "wwwroot\" -Force
+          Remove-Item "wwwroot\wwwroot" -Recurse -Force
+          Write-Host "Fixed!"
+          } else {
+          Write-Host "No nested wwwroot found - structure is correct"
+          }
+          
       - name: Verify Publish Contents
         working-directory: BooksMart.Web/publish
         run: |
@@ -55,4 +68,5 @@ jobs:
         with:
           app-name: BooksMartMVC
           package: BooksMart.Web/publish
+
 
